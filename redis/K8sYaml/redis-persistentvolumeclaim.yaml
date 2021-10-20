@@ -1,0 +1,13 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: redis-datadir-pvc-1 
+  namespace: redis
+spec:
+  volumeName: redis-datadir-pv-1 
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi

@@ -1,0 +1,51 @@
+kind: Deployment
+#apiVersion: extensions/v1beta1
+apiVersion: apps/v1
+metadata:
+  labels:
+    app: devops-redis 
+  name: deploy-devops-redis
+  namespace: redis
+spec:
+  replicas: 1 
+  selector:
+    matchLabels:
+      app: devops-redis
+  template:
+    metadata:
+      labels:
+        app: devops-redis
+    spec:
+      containers:
+        - name: redis-container
+          image: hub.zhangguiyuan.com/baseimage/redis:v4.0.14 
+          imagePullPolicy: IfNotPresent
+          volumeMounts:
+          - mountPath: "/data/redis-data/"
+            name: redis-datadir
+      volumes:
+        - name: redis-datadir
+          persistentVolumeClaim:
+            claimName: redis-datadir-pvc-1 
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  labels:
+    app: devops-redis
+  name: srv-devops-redis
+  namespace: redis
+spec:
+  type: NodePort
+  ports:
+  - name: http
+    port: 6379 
+    targetPort: 6379
+    nodePort: 26379 
+  selector:
+    app: devops-redis
+  sessionAffinity: ClientIP
+  sessionAffinityConfig:
+    clientIP:
+      timeoutSeconds: 10800
